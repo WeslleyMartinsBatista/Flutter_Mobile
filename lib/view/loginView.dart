@@ -1,7 +1,28 @@
 import 'package:flutter/material.dart';
+import '../viewModel/loginModelView.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
   const LoginView({super.key});
+
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  // Instância da ViewModel para gerir a lógica
+  final LoginViewModel _viewModel = LoginViewModel();
+
+  // Controladores para capturar o texto dos campos
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Limpar os controladores da memória ao fechar a tela
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,17 +33,26 @@ class LoginView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const TextField(
-              decoration: InputDecoration(labelText: 'E-mail'),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'E-mail'),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
-            const TextField(
+            TextField(
+              controller: _passwordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: 'Senha'),
+              decoration: const InputDecoration(labelText: 'Senha'),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // Envia os dados recolhidos para a ViewModel processar
+                _viewModel.fazerLogin(
+                  _emailController.text,
+                  _passwordController.text,
+                );
+              },
               child: const Text('Entrar'),
             ),
           ],
