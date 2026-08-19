@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'view/loginView.dart'; // Importa a nova tela
+import 'view/loginView.dart'; // Importa a tela de login
 
 void main() {
   runApp(const MeuAplicativo());
@@ -12,7 +12,7 @@ class MeuAplicativo extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginView(), // Define a tela de login como inicial
+      home: LoginView(), // Chamada da tela de Login
     );
   }
 }
