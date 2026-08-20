@@ -193,7 +193,7 @@ class _LoginViewState extends State<LoginView> {
                 child: SizedBox(
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: _executarLogin,
+                    onPressed: _executarLogin, // ---- Chamada de loginModelView ----
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
