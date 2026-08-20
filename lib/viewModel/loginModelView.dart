@@ -1,26 +1,27 @@
-// Definição do modelo de dados
-class UserModel {
-  final String email;
-  final String password;
+import 'package:flutter/material.dart';
+import '../database/mock_database.dart';
+import '../model/userModel.dart';
 
-  UserModel({
-    required this.email,
-    required this.password,
-  });
-}
-
-// Classe que controla a lógica da tela de login
 class LoginViewModel {
-  // Função que valida e processa o login
-  void fazerLogin(String email, String password) {
+  
+  bool fazerLogin(String email, String password) {
     if (email.isEmpty || password.isEmpty) {
       print('Erro: E-mail ou senha não podem estar vazios.');
-      return;
+      return false;
     }
 
-    final usuario = UserModel(email: email, password: password);
-    
-    // Simulação de sucesso no login
-    print('Login realizado com sucesso para: ${usuario.email}');
+    try {
+      // O <UserModel> garante que o Dart reconheça 'email' e 'senha'
+      final usuarioEncontrado = MockDatabase.usuarios.firstWhere(
+        (user) => user.email == email && user.senha == password
+      );
+
+      print('Login realizado com sucesso para: ${usuarioEncontrado.nome}');
+      return true;
+
+    } catch (e) {
+      print('Erro: E-mail ou senha incorretos.');
+      return false;
+    }
   }
 }
