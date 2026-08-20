@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../viewModel/loginModelView.dart';
+import 'homeView.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -9,16 +10,12 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  // Instância da ViewModel para gerir a lógica
   final LoginViewModel _viewModel = LoginViewModel();
-
-  // Controladores para capturar o texto dos campos
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    // Limpar os controladores da memória ao fechar a tela
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -47,11 +44,27 @@ class _LoginViewState extends State<LoginView> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
-                // Envia os dados recolhidos para a ViewModel processar
-                _viewModel.fazerLogin(
+                // Executa o método da ViewModel e recebe true ou false
+                bool sucesso = _viewModel.fazerLogin(
                   _emailController.text,
                   _passwordController.text,
                 );
+
+                if (sucesso) {
+                  if (mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomeView()),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('E-mail ou senha incorretos!'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
               child: const Text('Entrar'),
             ),
