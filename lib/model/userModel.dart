@@ -1,7 +1,13 @@
-class User {
-  String nome;
-  String email;
-  String senha;
-  User({required this.nome, required this.email, required this.senha}); // Construtor: permite criar qualquer usuário
+class UserModel {
+  final String nome;
+  final String email;
+  final String senha;
+
+  UserModel({
+    required this.nome,
+    required this.email,
+    required this.senha,
+  });
 }
+
 

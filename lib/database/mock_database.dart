@@ -1,21 +1,21 @@
-import '../models/user.dart';
+import '../model/userModel.dart'; 
 
-class MockDatabase{
-    static List<User> usuarios = [
-        User(
-            nome: "weslley Martins Batista",
-            email: "weslley@gmail.com"
+class MockDatabase {
+    static List<UserModel> usuarios = [
+        UserModel(
+            nome: "Weslley Martins Batista",
+            email: "weslley@gmail.com",
             senha: "123",
         ),
-        User(
+        UserModel(
             nome: "juliano Grass",
-            email: "juliano@gmail.com"
+            email: "juliano@gmail.com",
             senha: "123",
         ),
-        User(
+        UserModel(
             nome: "Gabriel Cortes",
-            email: "gabriel@gmail.com"
+            email: "gabriel@gmail.com",
             senha: "123",
         ),
     ];
-} 
+}
