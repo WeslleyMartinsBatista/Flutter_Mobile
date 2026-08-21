@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../viewModel/loginModelView.dart';
 import 'homeView.dart';
 
@@ -17,6 +16,9 @@ class _LoginViewState extends State<LoginView> {
 
   bool _obscurePassword = true;
 
+  // Definição da cor azul principal (substituindo o roxo)
+  final Color _primaryBlue = Colors.blue.shade700;
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -25,7 +27,6 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _executarLogin() {
-    // Validação básica de campos vazios
     if (_emailController.text.trim().isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -36,7 +37,6 @@ class _LoginViewState extends State<LoginView> {
       return;
     }
 
-    // Executa a lógica da ViewModel
     bool sucesso = _viewModel.fazerLogin(
       _emailController.text.trim(),
       _passwordController.text,
@@ -83,20 +83,20 @@ class _LoginViewState extends State<LoginView> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+                        color: _primaryBlue.withOpacity(0.12), // Fundo suave azul
                         borderRadius: BorderRadius.circular(18),
                       ),
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.lock_rounded,
-                        color: theme.colorScheme.primary,
+                        color: _primaryBlue, // Ícone Azul
                         size: 40,
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Bem-vindo',
-                      style: GoogleFonts.roboto(
+                      style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: theme.textTheme.headlineLarge?.color,
@@ -105,7 +105,7 @@ class _LoginViewState extends State<LoginView> {
                     const SizedBox(height: 8),
                     Text(
                       'Acesse sua conta para continuar',
-                      style: GoogleFonts.roboto(
+                      style: TextStyle(
                         fontSize: 16,
                         color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                       ),
@@ -123,9 +123,9 @@ class _LoginViewState extends State<LoginView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Campo E-mail
-                    Text(
+                    const Text(
                       'E-mail',
-                      style: GoogleFonts.roboto(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
@@ -148,9 +148,9 @@ class _LoginViewState extends State<LoginView> {
                     const SizedBox(height: 20),
 
                     // Campo Senha
-                    Text(
+                    const Text(
                       'Senha',
-                      style: GoogleFonts.roboto(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
@@ -193,15 +193,17 @@ class _LoginViewState extends State<LoginView> {
                 child: SizedBox(
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: _executarLogin, // ---- Chamada de loginModelView ----
+                    onPressed: _executarLogin,
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryBlue, // Fundo do botão azul
+                      foregroundColor: Colors.white, // Texto branco no botão
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Entrar',
-                      style: GoogleFonts.roboto(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -237,7 +239,7 @@ class _LoginViewState extends State<LoginView> {
                         child: Text(
                           'Ambiente seguro com criptografia de ponta a ponta.',
                           maxLines: 2,
-                          style: GoogleFonts.roboto(
+                          style: TextStyle(
                             fontSize: 12,
                             color: theme.textTheme.bodySmall?.color,
                           ),
