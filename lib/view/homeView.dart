@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../model/userModel.dart';
+
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  final UserModel usuario;
+
+  const HomeView({super.key, required this.usuario});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Página Inicial')),
-      body: const Center(child: Text('Bem-vindo a Home! Login efetuado com sucesso.')),
+      body: Center(child: Text('Bem-vindo, ${usuario.nome}!')),
     );
   }
 }

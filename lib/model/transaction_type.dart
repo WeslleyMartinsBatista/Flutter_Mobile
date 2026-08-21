@@ -1,0 +1,1 @@
+enum TransactionType { despesa, receita, investimento }
