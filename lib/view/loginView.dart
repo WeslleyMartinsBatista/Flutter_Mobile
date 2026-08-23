@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+
 import '../viewModel/loginModelView.dart';
 import 'homeView.dart';
+import 'dashboard_screen.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+  final ValueNotifier<ThemeMode> themeNotifier;
+
+  const LoginView({super.key, required this.themeNotifier});
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -27,7 +31,8 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _executarLogin() {
-    if (_emailController.text.trim().isEmpty || _passwordController.text.isEmpty) {
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('E-mail e senha são obrigatórios!'),
@@ -37,16 +42,21 @@ class _LoginViewState extends State<LoginView> {
       return;
     }
 
-    bool sucesso = _viewModel.fazerLogin(
+    final usuario = _viewModel.fazerLogin(
       _emailController.text.trim(),
       _passwordController.text,
     );
 
-    if (sucesso) {
+    if (usuario != null) {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeView()),
+          MaterialPageRoute(
+            builder: (context) => DashboardScreen(
+              usuario: usuario,
+              themeNotifier: widget.themeNotifier,
+            ),
+          ),
         );
       }
     } else {
@@ -73,7 +83,7 @@ class _LoginViewState extends State<LoginView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 60),
-              
+
               // Cabeçalho (Ícone + Títulos)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -83,7 +93,9 @@ class _LoginViewState extends State<LoginView> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: _primaryBlue.withOpacity(0.12), // Fundo suave azul
+                        color: _primaryBlue.withOpacity(
+                          0.12,
+                        ), // Fundo suave azul
                         borderRadius: BorderRadius.circular(18),
                       ),
                       alignment: Alignment.center,
@@ -107,7 +119,9 @@ class _LoginViewState extends State<LoginView> {
                       'Acesse sua conta para continuar',
                       style: TextStyle(
                         fontSize: 16,
-                        color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                          0.7,
+                        ),
                       ),
                     ),
                   ],
@@ -220,7 +234,8 @@ class _LoginViewState extends State<LoginView> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    color: theme.colorScheme.surfaceContainerHighest
+                        .withOpacity(0.3),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: theme.dividerColor.withOpacity(0.2),
