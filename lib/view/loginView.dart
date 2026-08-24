@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../viewModel/loginModelView.dart';
+import '../controller/loginController.dart';
 import 'homeView.dart';
 import 'dashboard_screen.dart';
 
@@ -14,7 +14,7 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final LoginViewModel _viewModel = LoginViewModel();
+  final LoginController _controller = LoginController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -30,44 +30,31 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
-  void _executarLogin() {
-    if (_emailController.text.trim().isEmpty ||
-        _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('E-mail e senha são obrigatórios!'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    final usuario = _viewModel.fazerLogin(
-      _emailController.text.trim(),
+  void _executarLogin() async {
+    final sucesso = await _controller.fazerLogin(
+      _emailController.text,
       _passwordController.text,
     );
 
-    if (usuario != null) {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DashboardScreen(
-              usuario: usuario,
-              themeNotifier: widget.themeNotifier,
-            ),
+    if (!mounted) return;
+
+    if (sucesso && _controller.currentUser.value != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DashboardScreen(
+            usuario: _controller.currentUser.value!,
+            themeNotifier: widget.themeNotifier,
           ),
-        );
-      }
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('E-mail ou senha incorretos!'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+        ),
+      );
+    } else if (_controller.errorMessage.value != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_controller.errorMessage.value!),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
