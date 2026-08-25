@@ -52,14 +52,13 @@ class _HomeViewState extends State<HomeView> {
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: const AddTransactionView(), // Atualizado para o novo widget
+        child: const AddTransactionView(),
       ),
     );
 
-    // Se salvou com sucesso no modal (retornou true)
+    // Se o usuário salvou a transação (retornou true do Navigator.pop)
     if (result == true) {
-      // Atualiza os dados locais do HomeController para sincronizar o saldo e os cards
-      _controller.notifyListeners(); 
+      _controller.refreshData(); // Recarrega os dados e atualiza a RecentTransactionsSection
     }
   }
 

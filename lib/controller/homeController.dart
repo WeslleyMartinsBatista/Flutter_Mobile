@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import '../database/mock_database.dart';
 import '../model/transaction_model.dart';
 import '../model/chart_data_model.dart';
 import '../model/userModel.dart';
 
 class HomeController extends ChangeNotifier {
   final UserModel usuario;
-  late double totalBalance;
 
-  HomeController({required this.usuario}) {
-    totalBalance = usuario.saldo;
-  }
+  HomeController({required this.usuario});
 
   // Estados da Tela
   bool _hideBalance = false;
@@ -18,8 +16,28 @@ class HomeController extends ChangeNotifier {
   String _chartPeriod = 'Mês';
   String get chartPeriod => _chartPeriod;
 
-  final double totalIncome = 4250.00;
-  final double totalExpense = 390.70;
+  // Lê as transações atualizadas do MockDatabase
+  // Retorna apenas as 3 últimas transações da lista
+  List<TransactionModel> get recentTransactions {
+    return MockDatabase.transacoes.take(3).toList();
+  }
+
+  // Cálculo dinâmico das receitas
+  double get totalIncome {
+    return MockDatabase.transacoes
+        .where((t) => t.isIncome)
+        .fold(0.0, (sum, item) => sum + item.amount);
+  }
+
+  // Cálculo dinâmico das despesas
+  double get totalExpense {
+    return MockDatabase.transacoes
+        .where((t) => !t.isIncome)
+        .fold(0.0, (sum, item) => sum + item.amount.abs());
+  }
+
+  // Cálculo do saldo total atualizado
+  double get totalBalance => usuario.saldo + totalIncome - totalExpense;
 
   // Métodos / Ações
   void toggleHideBalance() {
@@ -32,39 +50,10 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Dados Mockados
-  final List<TransactionModel> recentTransactions = [
-    TransactionModel(
-      id: '1',
-      title: 'Compras da semana',
-      category: 'Mercado',
-      amount: -384.20,
-      dateGroup: 'Hoje',
-      time: '20:15',
-      icon: Icons.shopping_cart,
-      iconColor: Colors.redAccent,
-    ),
-    TransactionModel(
-      id: '2',
-      title: 'Salário',
-      category: 'Receita',
-      amount: 4250.00,
-      dateGroup: 'Hoje',
-      time: '09:00',
-      icon: Icons.attach_money,
-      iconColor: Colors.green,
-    ),
-    TransactionModel(
-      id: '3',
-      title: 'Café',
-      category: 'Alimentação',
-      amount: -6.50,
-      dateGroup: 'Hoje',
-      time: '08:30',
-      icon: Icons.local_cafe,
-      iconColor: Colors.redAccent,
-    ),
-  ];
+  // Notifica a HomeView para reconstruir os cards e a lista
+  void refreshData() {
+    notifyListeners();
+  }
 
   List<ChartDataModel> getChartData() {
     if (_chartPeriod == 'Dia') {
