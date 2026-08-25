@@ -1,7 +1,7 @@
 class UserModel {
   final String id;
-  final String nome;
-  final String email;
+  String nome;
+  String email;
   final String senha;
   double saldo;
 
