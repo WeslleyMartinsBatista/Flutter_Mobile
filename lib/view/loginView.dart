@@ -19,7 +19,7 @@ class _LoginViewState extends State<LoginView> {
 
   bool _obscurePassword = true;
 
-  // Definição da cor azul principal (substituindo o roxo)
+  // Definição da cor azul principal
   final Color _primaryBlue = Colors.blue.shade700;
 
   @override
@@ -30,38 +30,30 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void _executarLogin() async {
-    final sucess = await _controller.fazerLogin(
+    final sucesso = await _controller.fazerLogin(
       _emailController.text,
       _passwordController.text,
     );
 
-    if (sucess) {
-      if (mounted) {
-        // Pega o usuario salvo no ValueNotifier do controller
-        final usuario = _controller.currentUser.value;
+    if (!mounted) return;
 
-        if (usuario != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomeView(
-                usuario: usuario,
-                themeNotifier: widget.themeNotifier,
-              ),
-            ),
-          );
-        }
-      }
-    } else {
-      if (mounted) {
-        final mensagemErro = _controller.errorMessage.value ?? 'Erro ao realizar login';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(mensagemErro),
-            backgroundColor: Colors.red,
+    if (sucesso && _controller.currentUser.value != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeView(
+            usuario: _controller.currentUser.value!,
+            themeNotifier: widget.themeNotifier,
           ),
-        );
-      }
+        ),
+      );
+    } else if (_controller.errorMessage.value != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_controller.errorMessage.value!),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -87,15 +79,13 @@ class _LoginViewState extends State<LoginView> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: _primaryBlue.withOpacity(
-                          0.12,
-                        ), // Fundo suave azul
+                        color: _primaryBlue.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(18),
                       ),
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.lock_rounded,
-                        color: _primaryBlue, // Ícone Azul
+                        color: _primaryBlue,
                         size: 40,
                       ),
                     ),
@@ -130,7 +120,6 @@ class _LoginViewState extends State<LoginView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Campo E-mail
                     const Text(
                       'E-mail',
                       style: TextStyle(
@@ -155,7 +144,6 @@ class _LoginViewState extends State<LoginView> {
 
                     const SizedBox(height: 20),
 
-                    // Campo Senha
                     const Text(
                       'Senha',
                       style: TextStyle(
@@ -203,8 +191,8 @@ class _LoginViewState extends State<LoginView> {
                   child: ElevatedButton(
                     onPressed: _executarLogin,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _primaryBlue, // Fundo do botão azul
-                      foregroundColor: Colors.white, // Texto branco no botão
+                      backgroundColor: _primaryBlue,
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
