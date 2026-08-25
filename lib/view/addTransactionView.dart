@@ -31,7 +31,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
   void _onSave() {
     final success = _controller.saveTransaction();
     if (success) {
-      Navigator.pop(context, true); // Retorna true informando sucesso
+      Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
