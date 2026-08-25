@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../controller/loginController.dart';
 import 'homeView.dart';
-import 'dashboard_screen.dart';
 
 class LoginView extends StatefulWidget {
   final ValueNotifier<ThemeMode> themeNotifier;
@@ -20,7 +19,7 @@ class _LoginViewState extends State<LoginView> {
 
   bool _obscurePassword = true;
 
-  // Definição da cor azul principal (substituindo o roxo)
+  // Definição da cor azul principal
   final Color _primaryBlue = Colors.blue.shade700;
 
   @override
@@ -42,7 +41,7 @@ class _LoginViewState extends State<LoginView> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => DashboardScreen(
+          builder: (context) => HomeView(
             usuario: _controller.currentUser.value!,
             themeNotifier: widget.themeNotifier,
           ),
@@ -80,15 +79,13 @@ class _LoginViewState extends State<LoginView> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: _primaryBlue.withOpacity(
-                          0.12,
-                        ), // Fundo suave azul
+                        color: _primaryBlue.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(18),
                       ),
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.lock_rounded,
-                        color: _primaryBlue, // Ícone Azul
+                        color: _primaryBlue,
                         size: 40,
                       ),
                     ),
@@ -123,7 +120,6 @@ class _LoginViewState extends State<LoginView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Campo E-mail
                     const Text(
                       'E-mail',
                       style: TextStyle(
@@ -148,7 +144,6 @@ class _LoginViewState extends State<LoginView> {
 
                     const SizedBox(height: 20),
 
-                    // Campo Senha
                     const Text(
                       'Senha',
                       style: TextStyle(
@@ -196,8 +191,8 @@ class _LoginViewState extends State<LoginView> {
                   child: ElevatedButton(
                     onPressed: _executarLogin,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _primaryBlue, // Fundo do botão azul
-                      foregroundColor: Colors.white, // Texto branco no botão
+                      backgroundColor: _primaryBlue,
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
