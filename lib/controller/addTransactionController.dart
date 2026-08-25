@@ -75,7 +75,6 @@ class AddTransactionController extends ChangeNotifier {
       iconColor: accentColor,
     );
 
-    // Insere no topo do MockDatabase
     MockDatabase.transacoes.insert(0, newTransaction);
     return true;
   }

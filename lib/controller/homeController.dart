@@ -36,7 +36,7 @@ class HomeController extends ChangeNotifier {
         .fold(0.0, (sum, item) => sum + item.amount.abs());
   }
 
-  // Cálculo do saldo total atualizado
+  // Calcula o saldo total somando e subtraindo as movimentações do saldo base do usuário
   double get totalBalance => usuario.saldo + totalIncome - totalExpense;
 
   // Métodos / Ações
