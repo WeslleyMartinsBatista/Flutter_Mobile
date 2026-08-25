@@ -6,7 +6,7 @@ import '../widgets/summary_cards.dart';
 import '../widgets/recent_transactions_section.dart';
 import '../widgets/cash_flow_chart.dart';
 import 'add_transaction_screen.dart';
-import 'settings_screen.dart';
+import 'settingsView.dart';
 import 'expense_report_screen.dart';
 import 'transactions_screen.dart';
 import '../model/userModel.dart';
@@ -72,8 +72,9 @@ class _HomeViewState extends State<HomeView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SettingsScreen(
+                        builder: (context) => SettingsView(
                           themeNotifier: widget.themeNotifier,
+                          usuario: _controller.usuario,
                         ),
                       ),
                     );
