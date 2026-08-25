@@ -5,7 +5,7 @@ class TransactionModel {
   final String title;
   final String category;
   final double amount;
-  final String dateGroup; // Ex: "Hoje, Out 24"
+  final String dateGroup;
   final String time;
   final IconData icon;
   final Color iconColor;
