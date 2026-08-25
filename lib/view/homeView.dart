@@ -5,10 +5,12 @@ import '../widgets/balance_card.dart';
 import '../widgets/summary_cards.dart';
 import '../widgets/recent_transactions_section.dart';
 import '../widgets/cash_flow_chart.dart';
-import 'add_transaction_screen.dart';
+/*import 'add_transaction_screen.dart';*/
+import 'addTransactionView.dart';
 import 'settingsView.dart';
 import 'expense_report_screen.dart';
-import 'transactions_screen.dart';
+/*import 'transactions_screen.dart';*/
+import 'transactionsView.dart';
 import '../model/userModel.dart';
 
 class HomeView extends StatefulWidget {
@@ -41,8 +43,8 @@ class _HomeViewState extends State<HomeView> {
     super.dispose();
   }
 
-  void _showAddTransactionModal() {
-    showModalBottomSheet(
+  void _showAddTransactionModal() async {
+    final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -50,9 +52,15 @@ class _HomeViewState extends State<HomeView> {
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: const AddTransactionScreen(),
+        child: const AddTransactionView(), // Atualizado para o novo widget
       ),
     );
+
+    // Se salvou com sucesso no modal (retornou true)
+    if (result == true) {
+      // Atualiza os dados locais do HomeController para sincronizar o saldo e os cards
+      _controller.notifyListeners(); 
+    }
   }
 
   @override
@@ -134,7 +142,8 @@ class _HomeViewState extends State<HomeView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const TransactionsScreen(),
+                        // Altere aqui de TransactionsScreen para TransactionsView
+                        builder: (context) => const TransactionsView(),
                       ),
                     );
                   }
