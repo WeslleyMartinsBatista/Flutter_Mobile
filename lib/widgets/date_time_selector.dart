@@ -19,7 +19,6 @@ class DateTimeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Seletor de Data
         Expanded(
           child: InkWell(
             onTap: () async {
@@ -33,13 +32,13 @@ class DateTimeSelector extends StatelessWidget {
             },
             borderRadius: BorderRadius.circular(14),
             child: _buildContainer(
+              context: context,
               icon: Icons.calendar_today_outlined,
               text: DateFormat('dd/MM/yyyy').format(selectedDate),
             ),
           ),
         ),
         const SizedBox(width: 12),
-        // Seletor de Hora
         Expanded(
           child: InkWell(
             onTap: () async {
@@ -51,6 +50,7 @@ class DateTimeSelector extends StatelessWidget {
             },
             borderRadius: BorderRadius.circular(14),
             child: _buildContainer(
+              context: context,
               icon: Icons.access_time_outlined,
               text: selectedTime.format(context),
             ),
@@ -60,21 +60,31 @@ class DateTimeSelector extends StatelessWidget {
     );
   }
 
-  Widget _buildContainer({required IconData icon, required String text}) {
+  Widget _buildContainer({
+    required BuildContext context,
+    required IconData icon,
+    required String text,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: colorScheme.outline),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: const Color(0xFF6B7280)),
+          Icon(icon, size: 18, color: colorScheme.onSurfaceVariant),
           const SizedBox(width: 10),
           Text(
             text,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
           ),
         ],
       ),

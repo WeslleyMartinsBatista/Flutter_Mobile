@@ -14,11 +14,17 @@ class AmountInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       children: [
         Text(
           'Valor da $typeName',
-          style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280), fontWeight: FontWeight.w500),
+          style: TextStyle(
+            color: colorScheme.onSurfaceVariant,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         const SizedBox(height: 8),
         IntrinsicWidth(
@@ -39,7 +45,9 @@ class AmountInput extends StatelessWidget {
                 color: accentColor.withOpacity(0.7),
               ),
               hintText: '0,00',
-              hintStyle: TextStyle(color: Colors.grey.shade300),
+              hintStyle: TextStyle(
+                color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+              ),
               border: InputBorder.none,
             ),
           ),

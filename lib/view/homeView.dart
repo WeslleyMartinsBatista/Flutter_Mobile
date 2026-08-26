@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 import '../controller/homeController.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/summary_cards.dart';
 import '../widgets/recent_transactions_section.dart';
-import '../widgets/cash_flow_chart.dart';
-/*import 'add_transaction_screen.dart';*/
 import 'addTransactionView.dart';
 import 'settingsView.dart';
 import 'expense_report_screen.dart';
-/*import 'transactions_screen.dart';*/
 import 'transactionsView.dart';
 import '../model/userModel.dart';
 
@@ -33,7 +31,6 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    // Instancia o Controller passando o usuário do Widget
     _controller = HomeController(usuario: widget.usuario);
   }
 
@@ -56,21 +53,25 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
 
-    // Se o usuário salvou a transação (retornou true do Navigator.pop)
     if (result == true) {
-      _controller.refreshData(); // Recarrega os dados e atualiza a RecentTransactionsSection
+      _controller.refreshData();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
+        final categoriasPizza = _controller.getPieChartData();
+
         return Scaffold(
-          backgroundColor: const Color(0xFFF5F7FA),
+          backgroundColor: theme.scaffoldBackgroundColor,
           appBar: AppBar(
-            backgroundColor: const Color(0xFF0D47A1),
+            backgroundColor: colorScheme.surface,
             elevation: 0,
             title: Row(
               children: [
@@ -86,9 +87,9 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     );
                   },
-                  child: const CircleAvatar(
-                    backgroundColor: Colors.white24,
-                    child: Icon(Icons.person, color: Colors.white),
+                  child: CircleAvatar(
+                    backgroundColor: colorScheme.primary.withOpacity(0.2),
+                    child: Icon(Icons.person, color: colorScheme.primary),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -97,15 +98,17 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     Text(
                       'Olá, ${_controller.usuario.nome.split(' ').first}',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'Bem-vindo de volta',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                      style: TextStyle(
+                          color: colorScheme.onSurface.withOpacity(0.7),
+                          fontSize: 12),
                     ),
                   ],
                 ),
@@ -117,17 +120,18 @@ class _HomeViewState extends State<HomeView> {
                   _controller.hideBalance
                       ? Icons.visibility_off
                       : Icons.visibility,
-                  color: Colors.white,
+                  color: colorScheme.onSurface,
                 ),
                 onPressed: _controller.toggleHideBalance,
                 tooltip: 'Ocultar Saldo',
               ),
               IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.white),
+                icon: Icon(Icons.notifications_none, color: colorScheme.onSurface),
                 onPressed: () {},
               ),
               PopupMenuButton<String>(
-                icon: const Icon(Icons.menu, color: Colors.white),
+                icon: Icon(Icons.menu, color: colorScheme.onSurface),
+                color: colorScheme.surface,
                 onSelected: (value) {
                   if (value == 'relatorios') {
                     Navigator.push(
@@ -141,30 +145,29 @@ class _HomeViewState extends State<HomeView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        // Altere aqui de TransactionsScreen para TransactionsView
                         builder: (context) => const TransactionsView(),
                       ),
                     );
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem<String>(
+                  PopupMenuItem<String>(
                     value: 'relatorios',
                     child: Row(
                       children: [
-                        Icon(Icons.bar_chart),
-                        SizedBox(width: 12),
-                        Text('Relatórios de gastos'),
+                        Icon(Icons.bar_chart, color: colorScheme.onSurface),
+                        const SizedBox(width: 12),
+                        Text('Relatórios de gastos', style: TextStyle(color: colorScheme.onSurface)),
                       ],
                     ),
                   ),
-                  const PopupMenuItem<String>(
+                  PopupMenuItem<String>(
                     value: 'transacoes',
                     child: Row(
                       children: [
-                        Icon(Icons.receipt_long),
-                        SizedBox(width: 12),
-                        Text('Transações'),
+                        Icon(Icons.receipt_long, color: colorScheme.onSurface),
+                        const SizedBox(width: 12),
+                        Text('Transações', style: TextStyle(color: colorScheme.onSurface)),
                       ],
                     ),
                   ),
@@ -189,27 +192,86 @@ class _HomeViewState extends State<HomeView> {
                     hideBalance: _controller.hideBalance,
                   ),
                   const SizedBox(height: 24),
+                  
+                  // Transações Recentes agora vem antes do gráfico
                   RecentTransactionsSection(
                     transactions: _controller.recentTransactions,
                     hideBalance: _controller.hideBalance,
                   ),
                   const SizedBox(height: 24),
-                  CashFlowChart(
-                    chartPeriod: _controller.chartPeriod,
-                    chartData: _controller.getChartData(),
-                    onPeriodChanged: _controller.setChartPeriod,
+
+                  // Gráfico de Pizza movido para baixo e com Nomes
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.shadowColor.withOpacity(
+                            theme.brightness == Brightness.dark ? 0.45 : 0.12,
+                          ),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Despesas por Categoria',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          height: 220, // Aumentei um pouco a altura para caber os textos
+                          child: categoriasPizza.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'Sem gastos registrados',
+                                    style: TextStyle(color: colorScheme.onSurface),
+                                  ),
+                                )
+                              : PieChart(
+                                  PieChartData(
+                                    sectionsSpace: 2,
+                                    centerSpaceRadius: 40,
+                                    sections: categoriasPizza.map((cat) {
+                                      return PieChartSectionData(
+                                        color: cat['color'] as Color,
+                                        value: cat['amount'] as double,
+                                        title: cat['name'] as String, // Aqui exibe o nome da categoria!
+                                        titleStyle: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white, // Letra branca dentro da fatia do gráfico
+                                        ),
+                                        radius: 60, // Aumentei o raio da fatia para o texto caber melhor
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: _showAddTransactionModal,
-            backgroundColor: const Color(0xFF0D47A1),
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text(
+            backgroundColor: colorScheme.primary,
+            icon: Icon(Icons.add, color: colorScheme.onPrimary),
+            label: Text(
               'Nova Transação',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: colorScheme.onPrimary),
             ),
           ),
         );

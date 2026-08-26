@@ -33,10 +33,11 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     if (success) {
       Navigator.pop(context, true);
     } else {
+      final colorScheme = Theme.of(context).colorScheme;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Preencha um valor e uma descrição válidos.'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('Preencha um valor e uma descrição válidos.'),
+          backgroundColor: colorScheme.error,
         ),
       );
     }
@@ -44,6 +45,9 @@ class _AddTransactionViewState extends State<AddTransactionView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
@@ -51,11 +55,13 @@ class _AddTransactionViewState extends State<AddTransactionView> {
           constraints: const BoxConstraints(maxWidth: 550),
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: colorScheme.surface, // Acompanha o tema (claro ou escuro)
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: theme.shadowColor.withOpacity(
+                  theme.brightness == Brightness.dark ? 0.65 : 0.18,
+                ),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -73,25 +79,26 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Nova Transação',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937),
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close, color: Colors.grey),
+                          icon: Icon(Icons.close, color: colorScheme.onSurfaceVariant),
                           tooltip: 'Fechar',
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
+                    // Seletor de Tipo — usa a cor primária do tema
                     TransactionTypeSelector(
                       selectedType: _controller.selectedType,
-                      accentColor: _controller.accentColor,
+                      accentColor: colorScheme.primary,
                       onChanged: _controller.setType,
                     ),
                     const SizedBox(height: 24),
@@ -103,23 +110,25 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                     const SizedBox(height: 20),
                     TextField(
                       controller: _controller.descriptionController,
+                      style: TextStyle(color: colorScheme.onSurface),
                       decoration: InputDecoration(
                         labelText: 'Descrição',
                         hintText: 'Ex: Compras no supermercado',
-                        prefixIcon: const Icon(Icons.edit_note_outlined),
+                        prefixIcon: Icon(Icons.edit_note_outlined, color: colorScheme.onSurfaceVariant),
                         filled: true,
-                        fillColor: const Color(0xFFF9FAFB),
+                        fillColor: colorScheme.surfaceContainerHighest,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
+                          borderSide: BorderSide.none,
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(color: Colors.grey.shade200),
+                          borderSide: BorderSide.none,
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
+                    // Seletor de Data e Hora
                     DateTimeSelector(
                       selectedDate: _controller.selectedDate,
                       selectedTime: _controller.selectedTime,
@@ -127,13 +136,15 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                       onTimeChanged: _controller.setTime,
                     ),
                     const SizedBox(height: 24),
+                    // Seletor de Categorias — usa a cor primária do tema
                     CategorySelector(
                       categories: _controller.categories,
                       selectedCategory: _controller.selectedCategory,
-                      accentColor: _controller.accentColor,
+                      accentColor: colorScheme.primary,
                       onCategoryChanged: _controller.setCategory,
                     ),
                     const SizedBox(height: 32),
+                    // Botões de Ação (mantêm as cores específicas por tipo: vermelho, verde, azul)
                     TransactionActionButtons(
                       accentColor: _controller.accentColor,
                       onSave: _onSave,

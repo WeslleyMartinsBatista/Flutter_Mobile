@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/chart_data_model.dart';
+import '../theme/app_theme.dart';
 
 class CashFlowChart extends StatelessWidget {
   final String chartPeriod;
@@ -15,9 +16,10 @@ class CashFlowChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -26,7 +28,14 @@ class CashFlowChart extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Fluxo de Caixa', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  'Fluxo de Caixa',
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 SegmentedButton<String>(
                   segments: const [
                     ButtonSegment(value: 'Dia', label: Text('Dia')),
@@ -45,7 +54,9 @@ class CashFlowChart extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: chartData.map((data) => _buildBar(data)).toList(),
+                children: chartData
+                    .map((data) => _buildBar(context, data))
+                    .toList(),
               ),
             ),
           ],
@@ -54,7 +65,10 @@ class CashFlowChart extends StatelessWidget {
     );
   }
 
-  Widget _buildBar(ChartDataModel data) {
+  Widget _buildBar(BuildContext context, ChartDataModel data) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final barColor = data.isExpense ? colorScheme.error : AppTheme.incomeColor;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -62,12 +76,18 @@ class CashFlowChart extends StatelessWidget {
           width: 18,
           height: 120 * data.height,
           decoration: BoxDecoration(
-            color: data.isExpense ? Colors.redAccent.shade100 : const Color(0xFF0D47A1),
+            color: barColor,
             borderRadius: BorderRadius.circular(6),
           ),
         ),
         const SizedBox(height: 8),
-        Text(data.label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Text(
+          data.label,
+          style: TextStyle(
+            color: colorScheme.onSurfaceVariant,
+            fontSize: 12,
+          ),
+        ),
       ],
     );
   }

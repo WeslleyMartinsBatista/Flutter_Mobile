@@ -99,9 +99,12 @@ class _SettingsViewState extends State<SettingsView> {
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
         final isDarkMode = widget.themeNotifier.value == ThemeMode.dark;
 
         return Scaffold(
+          backgroundColor: theme.scaffoldBackgroundColor,
           appBar: AppBar(
             title: const Text(
               'Configurações',
@@ -119,7 +122,7 @@ class _SettingsViewState extends State<SettingsView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Divider(height: 1),
+                Divider(height: 1, color: colorScheme.outline),
 
                 // Perfil
                 Padding(
@@ -130,14 +133,14 @@ class _SettingsViewState extends State<SettingsView> {
                         width: 70,
                         height: 70,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFC08A75),
+                          color: colorScheme.primary,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           _controller.initials,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colorScheme.onPrimary,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
@@ -150,17 +153,18 @@ class _SettingsViewState extends State<SettingsView> {
                           children: [
                             Text(
                               _controller.userName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               _controller.userEmail,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey,
+                                color: colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -170,18 +174,11 @@ class _SettingsViewState extends State<SettingsView> {
                         onPressed: _showEditProfileDialog,
                         icon: const Icon(Icons.edit, size: 16),
                         label: const Text('Editar'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              Theme.of(context).colorScheme.onSurface,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
                       ),
                     ],
                   ),
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: colorScheme.outline),
 
                 // Configurações Gerais
                 SettingRow(
@@ -190,21 +187,21 @@ class _SettingsViewState extends State<SettingsView> {
                   subtitle: 'BRL (R\$)',
                   onTap: () {},
                 ),
-                const Divider(height: 1, indent: 64),
+                Divider(height: 1, indent: 64, color: colorScheme.outline),
                 SettingRow(
                   icon: Icons.label_outline,
                   title: 'Categorias',
                   subtitle: 'Modifique as categorias',
                   onTap: () {},
                 ),
-                const Divider(height: 1, indent: 64),
+                Divider(height: 1, indent: 64, color: colorScheme.outline),
                 SettingRow(
                   icon: Icons.notifications_none,
                   title: 'Notificações',
                   subtitle: 'Alertas e lembretes diários',
                   onTap: () {},
                 ),
-                const Divider(height: 1, indent: 64),
+                Divider(height: 1, indent: 64, color: colorScheme.outline),
 
                 // Dark Mode
                 SettingRow(
@@ -220,17 +217,17 @@ class _SettingsViewState extends State<SettingsView> {
                   ),
                 ),
 
-                const Divider(height: 1),
+                Divider(height: 1, color: colorScheme.outline),
 
                 // Seção de Segurança
-                const Padding(
-                  padding: EdgeInsets.only(left: 24.0, top: 24.0, bottom: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 24.0, top: 24.0, bottom: 8.0),
                   child: Text(
                     'SEGURANÇA & DADOS',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -240,14 +237,14 @@ class _SettingsViewState extends State<SettingsView> {
                   subtitle: 'Biometria & PIN',
                   onTap: () {},
                 ),
-                const Divider(height: 1, indent: 64),
+                Divider(height: 1, indent: 64, color: colorScheme.outline),
                 SettingRow(
                   icon: Icons.download_outlined,
                   title: 'Exportar dados',
                   subtitle: 'Baixar CSV ou JSON',
                   onTap: () {},
                 ),
-                const Divider(height: 1, indent: 64),
+                Divider(height: 1, indent: 64, color: colorScheme.outline),
                 SettingRow(
                   icon: Icons.delete_outline,
                   title: 'Limpar os dados',
@@ -271,7 +268,7 @@ class _SettingsViewState extends State<SettingsView> {
                         style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFB35C5C),
+                        backgroundColor: colorScheme.error,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

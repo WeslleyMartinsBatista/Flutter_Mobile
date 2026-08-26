@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/transaction_model.dart';
+import '../theme/app_theme.dart';
 
 class TransactionItem extends StatelessWidget {
   final TransactionModel transaction;
@@ -8,11 +9,18 @@ class TransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final amountColor = transaction.isIncome
+        ? AppTheme.incomeColor
+        : colorScheme.error;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Color(0xFFF0F0F0), width: 1)),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        border: Border(
+          bottom: BorderSide(color: colorScheme.outline, width: 1),
+        ),
       ),
       child: Row(
         children: [
@@ -32,13 +40,20 @@ class TransactionItem extends StatelessWidget {
               children: [
                 Text(
                   transaction.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
                 if (transaction.category.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     transaction.category,
-                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ],
@@ -50,15 +65,18 @@ class TransactionItem extends StatelessWidget {
               Text(
                 '${transaction.isIncome ? '+' : '-'}R\$${transaction.amount.abs().toStringAsFixed(2)}',
                 style: TextStyle(
+                  color: amountColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: transaction.isIncome ? const Color(0xFF4CAF50) : const Color(0xFFE53935),
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 transaction.time,
-                style: const TextStyle(color: Colors.grey, fontSize: 11),
+                style: TextStyle(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 11,
+                ),
               ),
             ],
           ),

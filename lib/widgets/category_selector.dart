@@ -17,24 +17,29 @@ class CategorySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Categoria (Opcional)',
               style: TextStyle(
+                color: colorScheme.onSurface,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF374151),
               ),
             ),
             if (selectedCategory != null)
               TextButton(
                 onPressed: () => onCategoryChanged(null),
-                child: const Text('Limpar seleção', style: TextStyle(fontSize: 12)),
+                child: const Text(
+                  'Limpar seleção',
+                  style: TextStyle(fontSize: 12),
+                ),
               ),
           ],
         ),
@@ -50,20 +55,26 @@ class CategorySelector extends StatelessWidget {
                 avatar: Icon(
                   cat.icon,
                   size: 18,
-                  color: isSelected ? Colors.white : const Color(0xFF4B5563),
+                  color: isSelected
+                      ? colorScheme.onPrimary
+                      : colorScheme.onSurfaceVariant,
                 ),
                 label: Text(cat.name),
                 selected: isSelected,
                 selectedColor: accentColor,
-                backgroundColor: const Color(0xFFF3F4F6),
+                backgroundColor: colorScheme.surfaceContainerHighest,
                 labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : const Color(0xFF374151),
+                  color: isSelected
+                      ? colorScheme.onPrimary
+                      : colorScheme.onSurface,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
-                    color: isSelected ? Colors.transparent : Colors.grey.shade300,
+                    color: isSelected
+                        ? Colors.transparent
+                        : colorScheme.outline,
                   ),
                 ),
                 onSelected: (selected) {
@@ -72,12 +83,19 @@ class CategorySelector extends StatelessWidget {
               );
             }),
             ActionChip(
-              avatar: const Icon(Icons.add, size: 18, color: Colors.blue),
-              label: const Text('Editar', style: TextStyle(color: Colors.blue)),
-              backgroundColor: Colors.blue.shade50,
+              avatar: Icon(
+                Icons.add,
+                size: 18,
+                color: colorScheme.primary,
+              ),
+              label: Text(
+                'Editar',
+                style: TextStyle(color: colorScheme.primary),
+              ),
+              backgroundColor: colorScheme.primaryContainer,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.blue.shade100),
+                side: BorderSide(color: colorScheme.primary.withOpacity(0.35)),
               ),
               onPressed: () {},
             ),

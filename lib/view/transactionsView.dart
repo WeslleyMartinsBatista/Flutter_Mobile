@@ -26,27 +26,30 @@ class _TransactionsViewState extends State<TransactionsView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
         final groupedData = _controller.filteredAndGroupedTransactions;
 
         return Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          backgroundColor: theme.scaffoldBackgroundColor,
           appBar: AppBar(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            backgroundColor: theme.scaffoldBackgroundColor,
             elevation: 0,
-            title: const Text(
+            title: Text(
               'Transações',
               style: TextStyle(
-                color: Colors.black,
+                color: colorScheme.onSurface, // Adapta para branco no dark e preto no light
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.tune, color: Colors.black),
+                icon: Icon(Icons.tune, color: colorScheme.onSurface),
                 onPressed: () {},
               ),
             ],
@@ -58,16 +61,18 @@ class _TransactionsViewState extends State<TransactionsView> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: TextField(
                   onChanged: _controller.setSearchQuery,
+                  style: TextStyle(color: colorScheme.onSurface),
                   decoration: InputDecoration(
                     hintText: 'Procure transações ou categorias',
-                    hintStyle: TextStyle(color: Colors.grey.shade400),
+                    hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.5)),
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: colorScheme.surfaceContainerHighest, // Fundo dinâmico
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    prefixIcon: Icon(Icons.search, color: colorScheme.onSurface.withOpacity(0.7)),
                   ),
                 ),
               ),
@@ -82,19 +87,23 @@ class _TransactionsViewState extends State<TransactionsView> {
                   itemBuilder: (context, index) {
                     final category = _controller.categories[index];
                     final isSelected = _controller.selectedCategory == category;
+                    
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: FilterChip(
                         label: Text(category),
                         selected: isSelected,
                         onSelected: (_) => _controller.setSelectedCategory(category),
-                        backgroundColor: Colors.white,
-                        selectedColor: Colors.grey.shade100,
-                        checkmarkColor: Colors.black,
+                        backgroundColor: colorScheme.surface,
+                        selectedColor: colorScheme.primary, // Cor de destaque do tema
+                        checkmarkColor: colorScheme.onPrimary,
+                        labelStyle: TextStyle(
+                          color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(
-                            color: isSelected ? Colors.black26 : Colors.grey.shade300,
+                            color: isSelected ? Colors.transparent : theme.dividerColor,
                           ),
                         ),
                       ),
@@ -108,7 +117,12 @@ class _TransactionsViewState extends State<TransactionsView> {
               // Lista Agrupada
               Expanded(
                 child: groupedData.isEmpty
-                    ? const Center(child: Text('Nenhuma transação encontrada.'))
+                    ? Center(
+                        child: Text(
+                          'Nenhuma transação encontrada.',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
+                      )
                     : ListView.builder(
                         itemCount: groupedData.length,
                         itemBuilder: (context, index) {
@@ -121,13 +135,13 @@ class _TransactionsViewState extends State<TransactionsView> {
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                color: const Color(0xFFF9F9F9),
+                                color: colorScheme.surfaceContainerHighest, // Adapta ao Dark Mode
                                 child: Text(
                                   dateGroup,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black54,
+                                    color: colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ),
@@ -141,8 +155,8 @@ class _TransactionsViewState extends State<TransactionsView> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {},
-            backgroundColor: const Color(0xFF1A1A1A),
-            child: const Icon(Icons.add, color: Colors.white),
+            backgroundColor: colorScheme.primary,
+            child: Icon(Icons.add, color: colorScheme.onPrimary),
           ),
         );
       },

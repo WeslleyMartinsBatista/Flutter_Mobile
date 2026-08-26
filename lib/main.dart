@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile_flutter/view/loginView.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,25 +33,9 @@ class FinancialApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Aplicativo Financeiro',
-
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF0D47A1),
-              brightness: Brightness.light,
-            ),
-            useMaterial3: true,
-          ),
-
-          darkTheme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF0D47A1),
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: true,
-          ),
-
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
           themeMode: themeMode,
-
           home: LoginView(
             themeNotifier: themeNotifier,
           ),

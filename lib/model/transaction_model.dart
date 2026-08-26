@@ -9,6 +9,7 @@ class TransactionModel {
   final String time;
   final IconData icon;
   final Color iconColor;
+  final DateTime date;
 
   TransactionModel({
     required this.id,
@@ -19,6 +20,7 @@ class TransactionModel {
     required this.time,
     required this.icon,
     required this.iconColor,
+    required this.date, 
   });
 
   bool get isIncome => amount >= 0;

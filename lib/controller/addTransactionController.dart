@@ -73,6 +73,7 @@ class AddTransactionController extends ChangeNotifier {
       time: '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
       icon: isExpense ? Icons.shopping_bag_outlined : Icons.arrow_upward_rounded,
       iconColor: accentColor,
+      date: DateTime.now(),
     );
 
     MockDatabase.transacoes.insert(0, newTransaction);

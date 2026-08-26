@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/transaction_model.dart';
+import '../theme/app_theme.dart';
 
 class RecentTransactionsSection extends StatelessWidget {
   final List<TransactionModel> transactions;
@@ -13,13 +14,22 @@ class RecentTransactionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Transações Recentes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Transações Recentes',
+              style: TextStyle(
+                color: colorScheme.onSurface,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             TextButton(
               onPressed: () {},
               child: const Text('Ver todas'),
@@ -27,22 +37,37 @@ class RecentTransactionsSection extends StatelessWidget {
           ],
         ),
         Card(
-          elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 0,
           child: ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: transactions.length,
-            separatorBuilder: (context, index) => const Divider(height: 1),
+            separatorBuilder: (context, index) => Divider(
+              height: 1,
+              color: colorScheme.outline,
+            ),
             itemBuilder: (context, index) {
               final tx = transactions[index];
+              final amountColor = tx.isIncome
+                  ? AppTheme.incomeColor
+                  : colorScheme.error;
+
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: tx.iconColor.withOpacity(0.1),
+                  backgroundColor: tx.iconColor.withOpacity(0.14),
                   child: Icon(tx.icon, color: tx.iconColor),
                 ),
-                title: Text(tx.title, style: const TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: Text(tx.category),
+                title: Text(
+                  tx.title,
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  tx.category,
+                  style: TextStyle(color: colorScheme.onSurfaceVariant),
+                ),
                 trailing: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -53,11 +78,17 @@ class RecentTransactionsSection extends StatelessWidget {
                           : '${tx.isIncome ? '+' : ''}${tx.amount.toStringAsFixed(2)}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: tx.isIncome ? Colors.green : Colors.redAccent,
+                        color: amountColor,
                         fontSize: 14,
                       ),
                     ),
-                    Text(tx.time, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                    Text(
+                      tx.time,
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 11,
+                      ),
+                    ),
                   ],
                 ),
               );

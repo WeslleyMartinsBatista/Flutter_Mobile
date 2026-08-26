@@ -19,13 +19,11 @@ class _LoginViewState extends State<LoginView> {
 
   bool _obscurePassword = true;
 
-  // Definição da cor azul principal
-  final Color _primaryBlue = Colors.blue.shade700;
-
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -48,10 +46,11 @@ class _LoginViewState extends State<LoginView> {
         ),
       );
     } else if (_controller.errorMessage.value != null) {
+      final colorScheme = Theme.of(context).colorScheme;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(_controller.errorMessage.value!),
-          backgroundColor: Colors.red,
+          backgroundColor: colorScheme.error,
         ),
       );
     }
@@ -60,8 +59,10 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -79,13 +80,13 @@ class _LoginViewState extends State<LoginView> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: _primaryBlue.withOpacity(0.12),
+                        color: colorScheme.primary.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(18),
                       ),
                       alignment: Alignment.center,
                       child: Icon(
                         Icons.lock_rounded,
-                        color: _primaryBlue,
+                        color: colorScheme.primary,
                         size: 40,
                       ),
                     ),
@@ -95,7 +96,7 @@ class _LoginViewState extends State<LoginView> {
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: theme.textTheme.headlineLarge?.color,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -103,9 +104,7 @@ class _LoginViewState extends State<LoginView> {
                       'Acesse sua conta para continuar',
                       style: TextStyle(
                         fontSize: 16,
-                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
-                          0.7,
-                        ),
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -120,41 +119,40 @@ class _LoginViewState extends State<LoginView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'E-mail',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
+                      style: TextStyle(color: colorScheme.onSurface),
+                      decoration: const InputDecoration(
                         hintText: 'Digite seu e-mail',
-                        prefixIcon: const Icon(Icons.mail_outline_rounded),
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
+                        prefixIcon: Icon(Icons.mail_outline_rounded),
                       ),
                     ),
 
                     const SizedBox(height: 20),
 
-                    const Text(
+                    Text(
                       'Senha',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
+                      style: TextStyle(color: colorScheme.onSurface),
                       decoration: InputDecoration(
                         hintText: 'Digite sua senha',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -163,17 +161,13 @@ class _LoginViewState extends State<LoginView> {
                             _obscurePassword
                                 ? Icons.visibility_off_rounded
                                 : Icons.visibility_rounded,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           onPressed: () {
                             setState(() {
                               _obscurePassword = !_obscurePassword;
                             });
                           },
-                        ),
-                        filled: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
                         ),
                       ),
                     ),
@@ -190,13 +184,6 @@ class _LoginViewState extends State<LoginView> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: _executarLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _primaryBlue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
                     child: const Text(
                       'Entrar',
                       style: TextStyle(
@@ -216,11 +203,10 @@ class _LoginViewState extends State<LoginView> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withOpacity(0.3),
+                    color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: theme.dividerColor.withOpacity(0.2),
+                      color: colorScheme.outline,
                       width: 1,
                     ),
                   ),
@@ -228,7 +214,7 @@ class _LoginViewState extends State<LoginView> {
                     children: [
                       Icon(
                         Icons.security_rounded,
-                        color: theme.iconTheme.color,
+                        color: colorScheme.onSurfaceVariant,
                         size: 20,
                       ),
                       const SizedBox(width: 12),
@@ -238,7 +224,7 @@ class _LoginViewState extends State<LoginView> {
                           maxLines: 2,
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.textTheme.bodySmall?.color,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),

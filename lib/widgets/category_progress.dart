@@ -16,7 +16,7 @@ class CategoryProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calcula o percentual do gasto para a barra de progresso (evita divisão por zero)
+    final colorScheme = Theme.of(context).colorScheme;
     final double percentage = totalAmount > 0 ? (amount / totalAmount) : 0.0;
 
     return Padding(
@@ -29,11 +29,19 @@ class CategoryProgress extends StatelessWidget {
             children: [
               Text(
                 categoryName,
-                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
               ),
               Text(
                 'R\$ ${amount.toStringAsFixed(2)}',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),
@@ -43,7 +51,7 @@ class CategoryProgress extends StatelessWidget {
             child: LinearProgressIndicator(
               value: percentage,
               minHeight: 10,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: colorScheme.surfaceContainerHighest,
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),

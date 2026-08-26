@@ -15,11 +15,14 @@ class TransactionTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6),
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outline),
       ),
       child: Row(
         children: TransactionType.values.map((type) {
@@ -44,24 +47,28 @@ class TransactionTypeSelector extends StatelessWidget {
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.white : Colors.transparent,
+                  color: isSelected
+                      ? colorScheme.surface
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: themeShadow(context),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
-                          )
+                          ),
                         ]
-                      : [],
+                      : const [],
                 ),
                 child: Text(
                   label,
                   textAlign: TextAlign.center,
                   style: TextStyle(
+                    color: isSelected
+                        ? accentColor
+                        : colorScheme.onSurfaceVariant,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected ? accentColor : const Color(0xFF6B7280),
                     fontSize: 14,
                   ),
                 ),
@@ -70,6 +77,13 @@ class TransactionTypeSelector extends StatelessWidget {
           );
         }).toList(),
       ),
+    );
+  }
+
+  Color themeShadow(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.shadowColor.withOpacity(
+      theme.brightness == Brightness.dark ? 0.55 : 0.25,
     );
   }
 }
