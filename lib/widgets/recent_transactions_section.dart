@@ -5,11 +5,13 @@ import '../theme/app_theme.dart';
 class RecentTransactionsSection extends StatelessWidget {
   final List<TransactionModel> transactions;
   final bool hideBalance;
+  final VoidCallback onViewAll;
 
   const RecentTransactionsSection({
     super.key,
     required this.transactions,
     required this.hideBalance,
+    required this.onViewAll,
   });
 
   @override
@@ -31,7 +33,7 @@ class RecentTransactionsSection extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: onViewAll,
               child: const Text('Ver todas'),
             ),
           ],

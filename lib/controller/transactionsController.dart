@@ -6,13 +6,10 @@ class TransactionsController extends ChangeNotifier {
   String searchQuery = '';
   String selectedCategory = 'Todas';
 
-  final List<String> categories = [
-    'Todas',
-    'Receita',
-    'Mercado',
-    'Transporte',
-    'Lazer',
-  ];
+  List<String> get categories => [
+        'Todas',
+        ...MockDatabase.categorias.map((category) => category.name),
+      ];
 
   // Consome as transações (agora dinâmicas)
   List<TransactionModel> get _allTransactions => MockDatabase.transacoes;
@@ -24,6 +21,10 @@ class TransactionsController extends ChangeNotifier {
 
   void setSelectedCategory(String category) {
     selectedCategory = category;
+    notifyListeners();
+  }
+
+  void refreshData() {
     notifyListeners();
   }
 

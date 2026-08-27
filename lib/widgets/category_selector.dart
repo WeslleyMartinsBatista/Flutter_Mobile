@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../model/category_item.dart';
+import 'category_management_dialog.dart';
 
 class CategorySelector extends StatelessWidget {
   final List<CategoryItem> categories;
   final String? selectedCategory;
   final ValueChanged<String?> onCategoryChanged;
   final Color accentColor;
+  final VoidCallback? onCategoriesChanged;
 
   const CategorySelector({
     super.key,
@@ -13,11 +15,16 @@ class CategorySelector extends StatelessWidget {
     required this.selectedCategory,
     required this.onCategoryChanged,
     required this.accentColor,
+    this.onCategoriesChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final categoryActionColor = theme.brightness == Brightness.dark
+        ? const Color(0xFF175C94)
+        : colorScheme.primary;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,21 +90,26 @@ class CategorySelector extends StatelessWidget {
               );
             }),
             ActionChip(
-              avatar: Icon(
+              avatar: const Icon(
                 Icons.add,
                 size: 18,
-                color: colorScheme.primary,
+                color: Colors.white,
               ),
-              label: Text(
-                'Editar',
-                style: TextStyle(color: colorScheme.primary),
+              label: const Text(
+                'Adicionar categoria',
+                style: TextStyle(color: Colors.white),
               ),
-              backgroundColor: colorScheme.primaryContainer,
+              backgroundColor: categoryActionColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: colorScheme.primary.withOpacity(0.35)),
+                side: BorderSide(color: categoryActionColor),
               ),
-              onPressed: () {},
+              onPressed: () {
+                showCategoryManagementDialog(
+                  context,
+                  onCategoriesChanged: onCategoriesChanged,
+                );
+              },
             ),
           ],
         ),
