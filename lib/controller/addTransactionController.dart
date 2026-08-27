@@ -12,15 +12,7 @@ class AddTransactionController extends ChangeNotifier {
   TimeOfDay selectedTime = TimeOfDay.now();
   String? selectedCategory;
 
-  final List<CategoryItem> categories = [
-    CategoryItem(name: 'Mercado', icon: Icons.shopping_cart_outlined),
-    CategoryItem(name: 'Transporte', icon: Icons.directions_bus_outlined),
-    CategoryItem(name: 'Refeição', icon: Icons.restaurant),
-    CategoryItem(name: 'Casa', icon: Icons.home_outlined),
-    CategoryItem(name: 'Saúde', icon: Icons.medical_services_outlined),
-    CategoryItem(name: 'Lazer', icon: Icons.sports_esports_outlined),
-    CategoryItem(name: 'Educação', icon: Icons.school_outlined),
-  ];
+  List<CategoryItem> get categories => MockDatabase.categorias;
 
   Color get accentColor {
     switch (selectedType) {
@@ -50,6 +42,14 @@ class AddTransactionController extends ChangeNotifier {
 
   void setCategory(String? category) {
     selectedCategory = category;
+    notifyListeners();
+  }
+
+  void refreshCategories() {
+    if (selectedCategory != null &&
+        !categories.any((category) => category.name == selectedCategory)) {
+      selectedCategory = null;
+    }
     notifyListeners();
   }
 

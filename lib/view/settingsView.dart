@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import '../controller/settingsController.dart';
 import '../model/userModel.dart';
 import '../widgets/setting_row.dart';
+import '../widgets/category_management_dialog.dart';
 import 'loginView.dart';
 
 class SettingsView extends StatefulWidget {
   final ValueNotifier<ThemeMode> themeNotifier;
   final UserModel usuario;
+  final VoidCallback? onDataChanged;
 
   const SettingsView({
     super.key,
     required this.themeNotifier,
     required this.usuario,
+    this.onDataChanged,
   });
 
   @override
@@ -84,7 +87,49 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
+  void _showCategoriesDialog() {
+    showCategoryManagementDialog(context);
+  }
+
+  Future<void> _confirmClearData() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        final colorScheme = Theme.of(dialogContext).colorScheme;
+        return AlertDialog(
+          title: const Text('Limpar todos os dados?'),
+          content: const Text(
+            'Essa ação apagará todas as transações, zerará os saldos e removerá as categorias adicionadas. Os gráficos também ficarão vazios. Essa ação não pode ser desfeita.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancelar'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: colorScheme.error,
+                foregroundColor: colorScheme.onError,
+              ),
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Limpar tudo'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    _controller.clearAllData();
+    widget.onDataChanged?.call();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Todos os dados foram removidos.')),
+    );
+  }
+
   void _logout() {
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
@@ -191,8 +236,8 @@ class _SettingsViewState extends State<SettingsView> {
                 SettingRow(
                   icon: Icons.label_outline,
                   title: 'Categorias',
-                  subtitle: 'Modifique as categorias',
-                  onTap: () {},
+                  subtitle: 'Adicione ou exclua categorias',
+                  onTap: _showCategoriesDialog,
                 ),
                 Divider(height: 1, indent: 64, color: colorScheme.outline),
                 SettingRow(
@@ -248,8 +293,8 @@ class _SettingsViewState extends State<SettingsView> {
                 SettingRow(
                   icon: Icons.delete_outline,
                   title: 'Limpar os dados',
-                  subtitle: 'Resetar todas as transações',
-                  onTap: () {},
+                  subtitle: 'Apagar saldo, transações e gráficos',
+                  onTap: _confirmClearData,
                 ),
 
                 const SizedBox(height: 32),

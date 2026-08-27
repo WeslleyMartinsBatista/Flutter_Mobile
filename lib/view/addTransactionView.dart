@@ -142,6 +142,7 @@ class _AddTransactionViewState extends State<AddTransactionView> {
                       selectedCategory: _controller.selectedCategory,
                       accentColor: colorScheme.primary,
                       onCategoryChanged: _controller.setCategory,
+                      onCategoriesChanged: _controller.refreshCategories,
                     ),
                     const SizedBox(height: 32),
                     // Botões de Ação (mantêm as cores específicas por tipo: vermelho, verde, azul)

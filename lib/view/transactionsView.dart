@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../controller/transactionsController.dart';
 import '../widgets/transaction_item.dart';
+import 'addTransactionView.dart';
 
 class TransactionsView extends StatefulWidget {
   const TransactionsView({super.key});
@@ -22,6 +23,24 @@ class _TransactionsViewState extends State<TransactionsView> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _showAddTransactionModal() async {
+    final result = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: const AddTransactionView(),
+      ),
+    );
+
+    if (result == true) {
+      _controller.refreshData();
+    }
   }
 
   @override
@@ -154,7 +173,7 @@ class _TransactionsViewState extends State<TransactionsView> {
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {},
+            onPressed: _showAddTransactionModal,
             backgroundColor: colorScheme.primary,
             child: Icon(Icons.add, color: colorScheme.onPrimary),
           ),

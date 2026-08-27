@@ -10,7 +10,7 @@ class LoginController {
   Future<bool> fazerLogin(String email, String password) async {
     errorMessage.value = null;
 
-    final emailTrimmed = email.trim();
+    final emailTrimmed = email.trim().toLowerCase();
 
     if (emailTrimmed.isEmpty || password.isEmpty) {
       errorMessage.value = 'E-mail e senha são obrigatórios!';
@@ -24,7 +24,8 @@ class LoginController {
 
     try {
       final usuarioEncontrado = MockDatabase.usuarios.firstWhere(
-        (user) => user.email == emailTrimmed && user.senha == password,
+        (user) =>
+            user.email.toLowerCase() == emailTrimmed && user.senha == password,
       );
 
       currentUser.value = usuarioEncontrado;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../database/mock_database.dart';
 import '../model/userModel.dart';
+import '../model/category_item.dart';
 
 class SettingsController extends ChangeNotifier {
   final UserModel usuario;
@@ -9,6 +10,36 @@ class SettingsController extends ChangeNotifier {
 
   String get userName => usuario.nome;
   String get userEmail => usuario.email;
+
+  List<CategoryItem> get categories => MockDatabase.categorias;
+
+  void addCategory(String name) {
+    final normalizedName = name.trim();
+    if (normalizedName.isEmpty) return;
+
+    final alreadyExists = categories.any(
+      (category) => category.name.toLowerCase() == normalizedName.toLowerCase(),
+    );
+    if (alreadyExists) return;
+
+    categories.add(
+      CategoryItem(
+        name: normalizedName,
+        icon: Icons.label_outline,
+      ),
+    );
+    notifyListeners();
+  }
+
+  void removeCategory(CategoryItem category) {
+    categories.remove(category);
+    notifyListeners();
+  }
+
+  void clearAllData() {
+    MockDatabase.clearAllData();
+    notifyListeners();
+  }
 
   // Retorna as iniciais do nome (ex: "JS")
   String get initials {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../controller/loginController.dart';
 import 'homeView.dart';
+import 'registerView.dart';
 
 class LoginView extends StatefulWidget {
   final ValueNotifier<ThemeMode> themeNotifier;
@@ -27,7 +28,27 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
+    Future<void> _abrirCadastro() async {
+    final contaCriada = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const RegisterView(),
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (contaCriada == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Conta criada com sucesso. Faça login para continuar.'),
+        ),
+      );
+    }
+  }
+
   void _executarLogin() async {
+
     final sucesso = await _controller.fazerLogin(
       _emailController.text,
       _passwordController.text,
@@ -175,7 +196,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 64),
 
               // Botão Entrar
               Padding(
@@ -190,6 +211,39 @@ class _LoginViewState extends State<LoginView> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: OutlinedButton.icon(
+                  onPressed: _abrirCadastro,
+                  icon: Icon(
+                    Icons.person_add_alt_1_rounded,
+                    color: colorScheme.primary,
+                  ),
+                  label: Text(
+                    'Criar minha conta',
+                    style: TextStyle(
+                      color: colorScheme.primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(60),
+                    backgroundColor: colorScheme.primary.withOpacity(0.08),
+                    foregroundColor: colorScheme.primary,
+                    side: BorderSide(
+                      color: colorScheme.primary.withOpacity(0.55),
+                      width: 1.3,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
                     ),
                   ),
                 ),

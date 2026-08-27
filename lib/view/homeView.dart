@@ -83,6 +83,7 @@ class _HomeViewState extends State<HomeView> {
                         builder: (context) => SettingsView(
                           themeNotifier: widget.themeNotifier,
                           usuario: _controller.usuario,
+                          onDataChanged: _controller.refreshData,
                         ),
                       ),
                     );
@@ -197,6 +198,14 @@ class _HomeViewState extends State<HomeView> {
                   RecentTransactionsSection(
                     transactions: _controller.recentTransactions,
                     hideBalance: _controller.hideBalance,
+                    onViewAll: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TransactionsView(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 24),
 
