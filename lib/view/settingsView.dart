@@ -91,6 +91,26 @@ class _SettingsViewState extends State<SettingsView> {
     showCategoryManagementDialog(context);
   }
 
+  void _showDevelopmentDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Em desenvolvimento'),
+          content: const Text(
+            'Esta funcionalidade estará disponível em uma próxima atualização.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Fechar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _confirmClearData() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -230,7 +250,7 @@ class _SettingsViewState extends State<SettingsView> {
                   icon: Icons.account_balance_wallet_outlined,
                   title: 'Carteira',
                   subtitle: 'BRL (R\$)',
-                  onTap: () {},
+                  onTap: _showDevelopmentDialog,
                 ),
                 Divider(height: 1, indent: 64, color: colorScheme.outline),
                 SettingRow(
@@ -244,7 +264,7 @@ class _SettingsViewState extends State<SettingsView> {
                   icon: Icons.notifications_none,
                   title: 'Notificações',
                   subtitle: 'Alertas e lembretes diários',
-                  onTap: () {},
+                  onTap: _showDevelopmentDialog,
                 ),
                 Divider(height: 1, indent: 64, color: colorScheme.outline),
 
@@ -280,14 +300,14 @@ class _SettingsViewState extends State<SettingsView> {
                   icon: Icons.help_outline,
                   title: 'Privacidade & Segurança',
                   subtitle: 'Biometria & PIN',
-                  onTap: () {},
+                  onTap: _showDevelopmentDialog,
                 ),
                 Divider(height: 1, indent: 64, color: colorScheme.outline),
                 SettingRow(
                   icon: Icons.download_outlined,
                   title: 'Exportar dados',
                   subtitle: 'Baixar CSV ou JSON',
-                  onTap: () {},
+                  onTap: _showDevelopmentDialog,
                 ),
                 Divider(height: 1, indent: 64, color: colorScheme.outline),
                 SettingRow(

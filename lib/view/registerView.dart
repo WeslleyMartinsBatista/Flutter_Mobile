@@ -29,13 +29,15 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
-  void _criarConta() {
-    final novoUsuario = _controller.criarConta(
+  Future<void> _criarConta() async {
+    final novoUsuario = await _controller.criarConta(
       nome: _nameController.text,
       email: _emailController.text,
       senha: _passwordController.text,
       confirmacaoSenha: _confirmPasswordController.text,
     );
+
+    if (!mounted) return;
 
     if (novoUsuario == null) {
       setState(() {});

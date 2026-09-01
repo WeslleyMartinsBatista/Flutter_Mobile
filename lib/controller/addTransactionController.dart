@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../model/transaction_type.dart';
 import '../model/category_item.dart';
-import '../model/transaction_model.dart';
-import '../database/mock_database.dart';
+import '../service/supabase_service.dart';
 
 class AddTransactionController extends ChangeNotifier {
   TransactionType selectedType = TransactionType.despesa;
@@ -12,7 +12,12 @@ class AddTransactionController extends ChangeNotifier {
   TimeOfDay selectedTime = TimeOfDay.now();
   String? selectedCategory;
 
-  List<CategoryItem> get categories => MockDatabase.categorias;
+  List<CategoryItem> _categories = [];
+  List<CategoryItem> get categories => _categories;
+
+  AddTransactionController() {
+    loadCategories();
+  }
 
   Color get accentColor {
     switch (selectedType) {
@@ -23,6 +28,24 @@ class AddTransactionController extends ChangeNotifier {
       case TransactionType.investimento:
         return const Color(0xFF1E88E5);
     }
+  }
+
+  Future<void> loadCategories() async {
+    try {
+      final userId = await SupabaseService.currentProfileId();
+      _categories = await SupabaseService.categoriesForUser(userId);
+      if (selectedCategory != null &&
+          !_categories.any((category) => category.name == selectedCategory)) {
+        selectedCategory = null;
+      }
+      notifyListeners();
+    } catch (_) {
+      // A tela permanece utilizável mesmo se as categorias falharem ao carregar.
+    }
+  }
+
+  void refreshCategories() {
+    loadCategories();
   }
 
   void setType(TransactionType type) {
@@ -45,38 +68,41 @@ class AddTransactionController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void refreshCategories() {
-    if (selectedCategory != null &&
-        !categories.any((category) => category.name == selectedCategory)) {
-      selectedCategory = null;
-    }
-    notifyListeners();
-  }
+  Future<bool> saveTransaction() async {
+    final amountText = amountController.text.replaceAll(',', '.').trim();
+    final parsedAmount = double.tryParse(amountText);
 
-  bool saveTransaction() {
-    final amountText = amountController.text.replaceAll(',', '.');
-    final double? parsedAmount = double.tryParse(amountText);
-
-    if (parsedAmount == null || descriptionController.text.trim().isEmpty) {
+    if (parsedAmount == null ||
+        parsedAmount <= 0 ||
+        descriptionController.text.trim().isEmpty) {
       return false;
     }
 
-    final isExpense = selectedType == TransactionType.despesa;
-    final finalAmount = isExpense ? -parsedAmount.abs() : parsedAmount.abs();
-
-    final newTransaction = TransactionModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: descriptionController.text.trim(),
-      category: selectedCategory ?? 'Geral',
-      amount: finalAmount,
-      dateGroup: 'Hoje',
-      time: '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
-      icon: isExpense ? Icons.shopping_bag_outlined : Icons.arrow_upward_rounded,
-      iconColor: accentColor,
-      date: DateTime.now(),
+    final userId = await SupabaseService.currentProfileId();
+    final categoryId = await SupabaseService.categoryIdByName(
+      userId,
+      selectedCategory,
     );
+    final occurredAt = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+    final type = selectedType.name;
 
-    MockDatabase.transacoes.insert(0, newTransaction);
+    await SupabaseService.client.from('transacoes').insert({
+      'user_id': userId,
+      'category_id': categoryId,
+      'title': descriptionController.text.trim(),
+      'type': type,
+      'amount': parsedAmount.abs(),
+      'occurred_at': occurredAt.toIso8601String(),
+      'icon_name': SupabaseService.iconNameForTransaction(type),
+      'icon_color': SupabaseService.colorToHex(accentColor),
+    });
+
     return true;
   }
 

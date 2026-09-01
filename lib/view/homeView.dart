@@ -88,9 +88,12 @@ class _HomeViewState extends State<HomeView> {
                       ),
                     );
                   },
-                  child: CircleAvatar(
-                    backgroundColor: colorScheme.primary.withOpacity(0.2),
-                    child: Icon(Icons.person, color: colorScheme.primary),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: CircleAvatar(
+                      backgroundColor: colorScheme.primary.withOpacity(0.2),
+                      child: Icon(Icons.person, color: colorScheme.primary),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -108,8 +111,9 @@ class _HomeViewState extends State<HomeView> {
                     Text(
                       'Bem-vindo de volta',
                       style: TextStyle(
-                          color: colorScheme.onSurface.withOpacity(0.7),
-                          fontSize: 12),
+                        color: colorScheme.onSurface.withOpacity(0.7),
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -127,7 +131,10 @@ class _HomeViewState extends State<HomeView> {
                 tooltip: 'Ocultar Saldo',
               ),
               IconButton(
-                icon: Icon(Icons.notifications_none, color: colorScheme.onSurface),
+                icon: Icon(
+                  Icons.notifications_none,
+                  color: colorScheme.onSurface,
+                ),
                 onPressed: () {},
               ),
               PopupMenuButton<String>(
@@ -158,7 +165,10 @@ class _HomeViewState extends State<HomeView> {
                       children: [
                         Icon(Icons.bar_chart, color: colorScheme.onSurface),
                         const SizedBox(width: 12),
-                        Text('Relatórios de gastos', style: TextStyle(color: colorScheme.onSurface)),
+                        Text(
+                          'Relatórios de gastos',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
                       ],
                     ),
                   ),
@@ -168,7 +178,10 @@ class _HomeViewState extends State<HomeView> {
                       children: [
                         Icon(Icons.receipt_long, color: colorScheme.onSurface),
                         const SizedBox(width: 12),
-                        Text('Transações', style: TextStyle(color: colorScheme.onSurface)),
+                        Text(
+                          'Transações',
+                          style: TextStyle(color: colorScheme.onSurface),
+                        ),
                       ],
                     ),
                   ),
@@ -193,7 +206,7 @@ class _HomeViewState extends State<HomeView> {
                     hideBalance: _controller.hideBalance,
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Transações Recentes agora vem antes do gráfico
                   RecentTransactionsSection(
                     transactions: _controller.recentTransactions,
@@ -243,7 +256,9 @@ class _HomeViewState extends State<HomeView> {
                               ? Center(
                                   child: Text(
                                     'Sem gastos registrados',
-                                    style: TextStyle(color: colorScheme.onSurface),
+                                    style: TextStyle(
+                                      color: colorScheme.onSurface,
+                                    ),
                                   ),
                                 )
                               : PieChart(

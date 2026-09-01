@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../database/mock_database.dart';
+
+import '../service/supabase_service.dart';
 import '../model/category_item.dart';
 
 Future<void> showCategoryManagementDialog(
@@ -29,9 +30,16 @@ class CategoryManagementDialog extends StatefulWidget {
 
 class _CategoryManagementDialogState extends State<CategoryManagementDialog> {
   final TextEditingController _nameController = TextEditingController();
+  List<CategoryItem> _categories = [];
+  int? _userId;
   String? _errorMessage;
+  bool _isLoading = true;
 
-  List<CategoryItem> get _categories => MockDatabase.categorias;
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
 
   @override
   void dispose() {
@@ -39,37 +47,74 @@ class _CategoryManagementDialogState extends State<CategoryManagementDialog> {
     super.dispose();
   }
 
-  void _addCategory() {
-    final name = _nameController.text.trim();
+  Future<void> _loadCategories() async {
+    try {
+      final userId = await SupabaseService.currentProfileId();
+      final categories = await SupabaseService.categoriesForUser(userId);
+      if (!mounted) return;
+      setState(() {
+        _userId = userId;
+        _categories = categories;
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Não foi possível carregar as categorias.';
+      });
+    }
+  }
 
+  Future<void> _addCategory() async {
+    final name = _nameController.text.trim();
     if (name.isEmpty) {
       setState(() => _errorMessage = 'Digite um nome para a categoria.');
       return;
     }
-
-    final alreadyExists = _categories.any(
+    if (_userId == null) {
+      setState(() => _errorMessage = 'Usuário não autenticado.');
+      return;
+    }
+    if (_categories.any(
       (category) => category.name.toLowerCase() == name.toLowerCase(),
-    );
-    if (alreadyExists) {
+    )) {
       setState(() => _errorMessage = 'Essa categoria já existe.');
       return;
     }
 
-    _categories.add(
-      CategoryItem(
-        name: name,
-        icon: Icons.label_outline,
-      ),
-    );
-    _nameController.clear();
-    widget.onCategoriesChanged?.call();
-    setState(() => _errorMessage = null);
+    try {
+      await SupabaseService.client.from('categorias').insert({
+        'user_id': _userId,
+        'name': name,
+        'icon_name': 'label_outline',
+      });
+      _nameController.clear();
+      widget.onCategoriesChanged?.call();
+      await _loadCategories();
+      if (mounted) setState(() => _errorMessage = null);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _errorMessage = 'Não foi possível adicionar a categoria.');
+      }
+    }
   }
 
-  void _removeCategory(CategoryItem category) {
-    _categories.remove(category);
-    widget.onCategoriesChanged?.call();
-    setState(() => _errorMessage = null);
+  Future<void> _removeCategory(CategoryItem category) async {
+    if (_userId == null) return;
+    try {
+      await SupabaseService.client
+          .from('categorias')
+          .delete()
+          .eq('user_id', _userId!)
+          .eq('name', category.name);
+      widget.onCategoriesChanged?.call();
+      await _loadCategories();
+    } catch (_) {
+      if (mounted) {
+        setState(() => _errorMessage = 'Não foi possível excluir a categoria.');
+      }
+    }
   }
 
   @override
@@ -99,7 +144,7 @@ class _CategoryManagementDialogState extends State<CategoryManagementDialog> {
                 ),
                 const SizedBox(width: 8),
                 IconButton.filled(
-                  onPressed: _addCategory,
+                  onPressed: _isLoading ? null : _addCategory,
                   tooltip: 'Adicionar categoria',
                   icon: const Icon(Icons.add),
                 ),
@@ -109,10 +154,7 @@ class _CategoryManagementDialogState extends State<CategoryManagementDialog> {
               const SizedBox(height: 6),
               Text(
                 _errorMessage!,
-                style: TextStyle(
-                  color: colorScheme.error,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: colorScheme.error, fontSize: 12),
               ),
             ],
             const SizedBox(height: 16),
@@ -127,38 +169,38 @@ class _CategoryManagementDialogState extends State<CategoryManagementDialog> {
             const SizedBox(height: 6),
             SizedBox(
               height: 260,
-              child: _categories.isEmpty
-                  ? Center(
-                      child: Text(
-                        'Nenhuma categoria cadastrada.',
-                        style: TextStyle(
-                          color: colorScheme.onSurfaceVariant,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _categories.isEmpty
+                      ? Center(
+                          child: Text(
+                            'Nenhuma categoria cadastrada.',
+                            style: TextStyle(color: colorScheme.onSurfaceVariant),
+                          ),
+                        )
+                      : ListView.separated(
+                          itemCount: _categories.length,
+                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          itemBuilder: (context, index) {
+                            final category = _categories[index];
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: Icon(
+                                category.icon,
+                                color: colorScheme.primary,
+                              ),
+                              title: Text(category.name),
+                              trailing: IconButton(
+                                onPressed: () => _removeCategory(category),
+                                tooltip: 'Excluir categoria',
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: colorScheme.error,
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                      ),
-                    )
-                  : ListView.separated(
-                      itemCount: _categories.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        final category = _categories[index];
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: Icon(
-                            category.icon,
-                            color: colorScheme.primary,
-                          ),
-                          title: Text(category.name),
-                          trailing: IconButton(
-                            onPressed: () => _removeCategory(category),
-                            tooltip: 'Excluir categoria',
-                            icon: Icon(
-                              Icons.delete_outline,
-                              color: colorScheme.error,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
             ),
           ],
         ),

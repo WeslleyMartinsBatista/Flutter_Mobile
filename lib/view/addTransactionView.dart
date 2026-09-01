@@ -28,8 +28,10 @@ class _AddTransactionViewState extends State<AddTransactionView> {
     super.dispose();
   }
 
-  void _onSave() {
-    final success = _controller.saveTransaction();
+  Future<void> _onSave() async {
+    final success = await _controller.saveTransaction();
+    if (!mounted) return;
+
     if (success) {
       Navigator.pop(context, true);
     } else {

@@ -1,23 +1,53 @@
 import 'package:flutter/material.dart';
-import '../database/mock_database.dart';
+
+import '../model/transaction_model.dart';
+import '../service/supabase_service.dart';
 
 class ExpenseReportController extends ChangeNotifier {
-  // Inicializa com o mês e ano atuais
   DateTime _selectedDate = DateTime.now();
-
   DateTime get selectedDate => _selectedDate;
+
+  List<TransactionModel> _transactions = [];
+  bool isLoading = true;
+  String? errorMessage;
+
+  ExpenseReportController() {
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      final userId = await SupabaseService.currentProfileId();
+      final rows = await SupabaseService.client
+          .from('transacoes')
+          .select('*, categorias(name)')
+          .eq('user_id', userId)
+          .order('occurred_at', ascending: false);
+      _transactions = (rows as List)
+          .map((row) => SupabaseService.transactionFromRow(
+                Map<String, dynamic>.from(row),
+              ))
+          .toList();
+      errorMessage = null;
+    } catch (_) {
+      errorMessage = 'Não foi possível carregar o relatório.';
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
+    loadData();
     notifyListeners();
   }
 
-  // Busca no MockDatabase, filtra pelo mês selecionado e agrupa as categorias
   List<Map<String, dynamic>> getProcessedCategories() {
     final Map<String, Map<String, dynamic>> aggregated = {};
-
-    // Tabela de cores para manter o padrão
-    final Map<String, Color> categoryColors = {
+    final categoryColors = <String, Color>{
       'Casa': const Color(0xFF2C2C2C),
       'Mercado': const Color(0xFF7A9BB0),
       'Transporte': const Color(0xFFC08A75),
@@ -25,38 +55,35 @@ class ExpenseReportController extends ChangeNotifier {
       'Lazer': const Color(0xFF81C784),
     };
 
-    // Percorre as transações reais do sistema
-    for (var tx in MockDatabase.transacoes) {
-      // Filtra apenas despesas E que sejam do mês/ano selecionado
+    for (final tx in _transactions) {
       if (!tx.isIncome &&
           tx.date.year == _selectedDate.year &&
           tx.date.month == _selectedDate.month) {
-        
-        String catName = tx.category.trim().isEmpty ? 'Outros' : tx.category;
-        Color color = categoryColors[catName] ?? Colors.grey;
-        double amount = tx.amount.abs();
-
-        if (aggregated.containsKey(catName)) {
-          aggregated[catName]!['amount'] += amount;
+        final category = tx.category.trim().isEmpty ? 'Outros' : tx.category;
+        final amount = tx.amount.abs();
+        if (aggregated.containsKey(category)) {
+          aggregated[category]!['amount'] += amount;
         } else {
-          aggregated[catName] = {
-            'name': catName,
+          aggregated[category] = {
+            'name': category,
             'amount': amount,
-            'color': color,
+            'color': categoryColors[category] ?? Colors.grey,
           };
         }
       }
     }
 
-    // Retorna ordenado do maior para o menor gasto
     final result = aggregated.values.toList();
-    result.sort((a, b) => (b['amount'] as double).compareTo(a['amount'] as double));
+    result.sort(
+      (a, b) => (b['amount'] as double).compareTo(a['amount'] as double),
+    );
     return result;
   }
 
-  // Calcula o total geral do mês baseado nos dados processados
   double get totalSpent {
-    final categories = getProcessedCategories();
-    return categories.fold(0.0, (sum, item) => sum + (item['amount'] as double));
+    return getProcessedCategories().fold(
+      0.0,
+      (sum, item) => sum + (item['amount'] as double),
+    );
   }
 }
